@@ -125,7 +125,6 @@ function check_variables() {
     check_variables_value "TIMEZONE" "$TIMEZONE"
     check_variables_value "LOCALES" "$LOCALES"
     check_variables_value "LOCALE_CONF" "$LOCALE_CONF"
-    check_variables_value "LANG" "$LANG"
     check_variables_value "KEYMAP" "$KEYMAP"
     check_variables_value "HOSTNAME" "$HOSTNAME"
     check_variables_value "USER_NAME" "$USER_NAME"
@@ -147,9 +146,10 @@ function check_variables() {
     check_variables_value "HOOKS" "$HOOKS"
     check_variables_list "BOOTLOADER" "$BOOTLOADER" "auto grub refind systemd" "true" "true"
     check_variables_list "CUSTOM_SHELL" "$CUSTOM_SHELL" "bash zsh dash fish" "true" "true"
-    check_variables_list "DESKTOP_ENVIRONMENT" "$DESKTOP_ENVIRONMENT" "gnome kde xfce mate cinnamon lxde i3-wm i3-gaps deepin budgie bspwm awesome qtile openbox" "false" "true"
+    check_variables_list "DESKTOP_ENVIRONMENT" "$DESKTOP_ENVIRONMENT" "gnome kde xfce mate cinnamon lxde i3-wm i3-gaps deepin budgie bspwm awesome qtile openbox leftwm dusk" "false" "true"
     check_variables_boolean "PACKAGES_MULTILIB" "$PACKAGES_MULTILIB"
     check_variables_boolean "PACKAGES_INSTALL" "$PACKAGES_INSTALL"
+    check_variables_boolean "PROVISION" "$PROVISION"
     check_variables_boolean "VAGRANT" "$VAGRANT"
     check_variables_boolean "REBOOT" "$REBOOT"
 }
@@ -161,7 +161,12 @@ function warning() {
     echo -e "${RED}This script deletes all partitions of the persistent${NC}"
     echo -e "${RED}storage and continuing all your data in it will be lost.${NC}"
     echo ""
-    read -p "Do you want to continue? [y/N] " yn
+    if [ "$WARNING_CONFIRM" == "true" ]; then
+        read -p "Do you want to continue? [y/N] " yn
+    else
+        yn="y"
+        sleep 2
+    fi
     case $yn in
         [Yy]* )
             ;;
@@ -438,7 +443,7 @@ function partition() {
             fi
             pvs $DEVICE_LVM
             if [ $? == 0 ]; then
-                pvremove -y $LVM_DEVICE
+                pvremove -y $DEVICE_LVM
             fi
             set -e
 
@@ -516,6 +521,8 @@ function partition() {
 
 function install() {
     print_step "install()"
+
+    pacman -Sy --noconfirm archlinux-keyring
 
     if [ -n "$PACMAN_MIRROR" ]; then
         echo "Server = $PACMAN_MIRROR" > /etc/pacman.d/mirrorlist
@@ -728,7 +735,7 @@ function users() {
         create_user "$USER" "$PASSWORD" "$USERS_GROUPS"
     done
 
-    arch-chroot /mnt sed -i 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/' /etc/sudoers
+    arch-chroot /mnt sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
 
     pacman_install "xdg-user-dirs"
 
@@ -1249,7 +1256,7 @@ function bootloader_systemd() {
     cat <<EOT > "/mnt$ESP_DIRECTORY/loader/loader.conf"
 # alis
 timeout 5
-default archlinux
+default archlinux.conf
 editor 0
 EOT
 
@@ -1475,6 +1482,12 @@ function desktop_environment() {
         "openbox" )
             desktop_environment_openbox
             ;;
+        "leftwm" )
+            desktop_environment_leftwm
+            ;;
+        "dusk" )
+            desktop_environment_dusk
+            ;;
     esac
 
     arch-chroot /mnt systemctl set-default graphical.target
@@ -1551,6 +1564,16 @@ function desktop_environment_openbox() {
     arch-chroot /mnt systemctl enable lightdm.service
 }
 
+function desktop_environment_leftwm() {
+    aur_install "leftwm-git leftwm-theme-git dmenu xterm lightdm lightdm-gtk-greeter xorg-server"
+    arch-chroot /mnt systemctl enable lightdm.service
+}
+
+function desktop_environment_dusk() {
+    aur_install "dusk-git dmenu xterm lightdm lightdm-gtk-greeter xorg-server"
+    arch-chroot /mnt systemctl enable lightdm.service
+}
+
 function packages() {
     print_step "packages()"
 
@@ -1564,6 +1587,12 @@ function packages() {
             exit 1
         fi
     fi
+}
+
+function provision() {
+    print_step "provision()"
+
+    (cd "$PROVISION_DIRECTORY" && cp -vr --parents . /mnt)
 }
 
 function vagrant() {
@@ -1689,6 +1718,15 @@ function copy_logs() {
 function main() {
     local START_TIMESTAMP=$(date -u +"%F %T")
     init_config
+
+    while getopts "w" arg; do
+        case $arg in
+            w)
+                WARNING_CONFIRM="false"
+                ;;
+        esac
+    done
+
     execute_step "sanitize_variables"
     execute_step "check_variables"
     execute_step "warning"
@@ -1721,6 +1759,9 @@ function main() {
         execute_step "desktop_environment"
     fi
     execute_step "packages"
+    if [ "$PROVISION" == "true" ]; then
+        execute_step "provision"
+    fi
     if [ "$VAGRANT" == "true" ]; then
         execute_step "vagrant"
     fi

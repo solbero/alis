@@ -2,4 +2,5 @@
 set -eu
 
 (cd deploy/ && git pull)
-hugo --destination="deploy"
+hugo gen chromastyles --style=github > themes/alis/assets/syntax.css
+hugo --destination="deploy" --gc --cleanDestinationDir
