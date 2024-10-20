@@ -1,7 +1,7 @@
 # alis
 
-![Arch Linux](https://raw.githubusercontent.com/picodotdev/alis/master/images/archlinux-badge.svg)
-![Bash](https://raw.githubusercontent.com/picodotdev/alis/master/images/sh-bash-badge.svg)
+![Arch Linux](https://raw.githubusercontent.com/picodotdev/alis/main/images/archlinux-badge.svg)
+![Bash](https://raw.githubusercontent.com/picodotdev/alis/main/images/sh-bash-badge.svg)
 ![Shellcheck](https://github.com/picodotdev/alis/actions/workflows/shellcheck.yml/badge.svg)
 
 Arch Linux Install Script (or alis, also known as _the Arch Linux executable installation guide and wiki_) installs an unattended, automated and customized Arch Linux system.
@@ -27,7 +27,7 @@ For new features, improvements and bugs, fill an issue in GitHub or make a pull 
 
 **Arch Linux Install Script (alis) is based on Arch Linux but is NOT approved, sponsored, or affiliated with Arch Linux or its related projects.**
 
-[![Arch Linux](https://raw.githubusercontent.com/picodotdev/alis/master/images/archlinux.svg "Arch Linux")](https://www.archlinux.org/)
+[![Arch Linux](https://raw.githubusercontent.com/picodotdev/alis/main/images/archlinux.svg "Arch Linux")](https://www.archlinux.org/)
 
 ## Index
 
@@ -53,7 +53,7 @@ For new features, improvements and bugs, fill an issue in GitHub or make a pull 
 * Allow to customize the installation to cover the most common cases
 * Provide support for system recovery
 * Provide support for installation log
-* Use same configuration default values
+* Use sane configuration default values
 
 ## Features
 
@@ -62,7 +62,7 @@ For new features, improvements and bugs, fill an issue in GitHub or make a pull 
 * **Encryption**: root partition encrypted and no encrypted
 * **Partition**: no LVM, LVM, LVM on LUKS, GPT on UEFI, MBR on BIOS, custom partition scheme and mountpoints
 * **File system**: ext4, btrfs (with subvols), xfs, f2fs, reiserfs
-* **Kernels**: linux, linux-lts, linux-hardened, linux-zen
+* **Kernels**: linux, linux-lts, linux-hardened, linux-zen. Supports Unified Kernel Image (UKI).
 * **Desktop environment**: GNOME, KDE, XFCE, Mate, Cinnamon, LXDE, i3-wm, i3-gaps, Deepin, Budgie, Bspwm, Awesome, Qtile, Openbox, Leftwm, Dusk
 * **Display managers**: GDM, SDDM, Lightdm, lxdm
 * **Graphics controller**: intel, nvidia and amd with optionally early KMS start. With intel optionally fastboot, hardware video acceleration and framebuffer compression.
@@ -72,14 +72,16 @@ For new features, improvements and bugs, fill an issue in GitHub or make a pull 
 * **Periodic TRIM** for SSD storage
 * Intel and AMD **processors microcode**
 * Optional **swap file**
-* **VirtualBox guest additions** and **VMware tools** support
+* **PipeWire** support
+* **Secure Boot** support
 * **Kernel compression** and **custom parameters**
 * **Users creation** and **add to sudoers**
 * **systemd units enable or disable**
 * **systemd-homed** support
-* **PipeWire** support
+* **systemd GPT partition automounting** support
 * **Multilib** support
 * **Files provision** support
+* **VirtualBox guest additions** and **VMware tools** support
 * **SSH install** and **cloud-init** support
 * Arch Linux custom **packages installation** and **repositories installation**
 * Flatpak utility installation and **Flatpak packages installation**
@@ -107,7 +109,7 @@ Internet connection is required, with wireless WIFI connection see <a href="http
 ```
 #                         # Start the system with latest Arch Linux installation media
 # loadkeys [keymap]       # Load keyboard keymap, eg. loadkeys es, loadkeys us, loadkeys de
-# curl -sL https://raw.githubusercontent.com/picodotdev/alis/master/download.sh | bash     # Download alis scripts
+# curl -sL https://raw.githubusercontent.com/picodotdev/alis/main/download.sh | bash       # Download alis scripts
 # vim alis.conf           # Edit configuration and change variables values with your preferences (system configuration)
 # ./alis.sh               # Start installation
 ```
@@ -118,9 +120,9 @@ Internet connection is required, with wireless WIFI connection see <a href="http
 #                         # Start the system with latest Arch Linux installation media
 # loadkeys [keymap]       # Load keyboard keymap, eg. loadkeys es, loadkeys us, loadkeys de
 # iwctl --passphrase "[WIFI_KEY]" station [WIFI_INTERFACE] connect "[WIFI_ESSID]"          # (Optional) Connect to WIFI network. _ip link show_ to know WIFI_INTERFACE.
-# curl -sL https://raw.githubusercontent.com/picodotdev/alis/master/download.sh | bash     # Download alis scripts
+# curl -sL https://raw.githubusercontent.com/picodotdev/alis/main/download.sh | bash       # Download alis scripts
 # # curl -sL https://git.io/JeaH6 | bash                                                   # Alternative download URL with URL shortener
-# # curl -sL https://raw.githubusercontent.com/picodotdev/alis/master/download.sh | bash -s -- -h [HASH_COMMIT] # Use specific version of the script based on the commit hash
+# # curl -sL https://raw.githubusercontent.com/picodotdev/alis/main/download.sh | bash -s -- -h [HASH_COMMIT] # Use specific version of the script based on the commit hash
 # ./alis-asciinema.sh     # (Optional) Start asciinema video recording
 # vim alis.conf           # Edit configuration and change variables values with your preferences (system configuration)
 # vim alis-packages.conf  # (Optional) Edit configuration and change variables values with your preferences (packages to install)
@@ -135,7 +137,7 @@ After the base Arch Linux system is installed, alis can install packages with pa
 
 ```
 #                                  # After system installation start a user session
-# curl -sL https://raw.githubusercontent.com/picodotdev/alis/master/download.sh | bash     # Download alis scripts
+# curl -sL https://raw.githubusercontent.com/picodotdev/alis/main/download.sh | bash       # Download alis scripts
 # # curl -sL https://git.io/JeaH6 | bash                                                   # Alternative download URL with URL shortener
 # ./alis-packages-asciinema.sh     # (Optional) Start asciinema video recording
 # vim alis-packages.conf           # Edit configuration and change variables values with your preferences (packages to install)
@@ -150,7 +152,7 @@ Boot from the latest <a href="https://www.archlinux.org/download/">original Arch
 #                                  # Start the system with latest Arch Linux installation media
 # loadkeys [keymap]                # Load keyboard keymap, eg. loadkeys es, loadkeys us, loadkeys de
 # iwctl --passphrase "[WIFI_KEY]" station [WIFI_INTERFACE] connect "[WIFI_ESSID]"          # (Optional) Connect to WIFI network. _ip link show_ to know WIFI_INTERFACE.
-# curl -sL https://raw.githubusercontent.com/picodotdev/alis/master/download.sh | bash     # Download alis scripts
+# curl -sL https://raw.githubusercontent.com/picodotdev/alis/main/download.sh | bash       # Download alis scripts
 # # curl -sL https://git.io/JeaH6 | bash                                                   # Alternative download URL with URL shortener
 # ./alis-recovery-asciinema.sh     # (Optional) Start asciinema video recording
 # vim alis-recovery.conf           # Edit configuration and change variables values with your last installation configuration with alis (mainly device and partition scheme)
@@ -186,13 +188,13 @@ Once the installation ends, you will have a ready to use system with your choose
 
 These are some desktop environments that can be installed.
 
-[![Arch Linux](https://raw.githubusercontent.com/picodotdev/alis/master/images/archlinux-gnome-thumb.jpg "Arch Linux with GNOME")](https://raw.githubusercontent.com/picodotdev/alis/master/images/archlinux-gnome.jpg)
-[![Arch Linux](https://raw.githubusercontent.com/picodotdev/alis/master/images/archlinux-kde-thumb.jpg "Arch Linux with KDE")](https://raw.githubusercontent.com/picodotdev/alis/master/images/archlinux-kde.jpg)
-[![Arch Linux](https://raw.githubusercontent.com/picodotdev/alis/master/images/archlinux-xfce-thumb.jpg "Arch Linux with XFCE")](https://raw.githubusercontent.com/picodotdev/alis/master/images/archlinux-xfce.jpg)
-[![Arch Linux](https://raw.githubusercontent.com/picodotdev/alis/master/images/archlinux-cinnamon-thumb.jpg "Arch Linux with Cinnamon")](https://raw.githubusercontent.com/picodotdev/alis/master/images/archlinux-cinnamon.jpg)
-[![Arch Linux](https://raw.githubusercontent.com/picodotdev/alis/master/images/archlinux-mate-thumb.jpg "Arch Linux with Mate")](https://raw.githubusercontent.com/picodotdev/alis/master/images/archlinux-mate.jpg)
-[![Arch Linux](https://raw.githubusercontent.com/picodotdev/alis/master/images/archlinux-lxde-thumb.jpg "Arch Linux with LXDE")](https://raw.githubusercontent.com/picodotdev/alis/master/images/archlinux-lxde.jpg)
-[![Arch Linux](https://raw.githubusercontent.com/picodotdev/alis/master/images/archlinux-root-password-thumb.png "Arch Linux unloking LUKS on boot")](https://raw.githubusercontent.com/picodotdev/alis/master/images/archlinux-root-password.png)
+[![Arch Linux](https://raw.githubusercontent.com/picodotdev/alis/main/images/archlinux-gnome-thumb.jpg "Arch Linux with GNOME")](https://raw.githubusercontent.com/picodotdev/alis/main/images/archlinux-gnome.jpg)
+[![Arch Linux](https://raw.githubusercontent.com/picodotdev/alis/main/images/archlinux-kde-thumb.jpg "Arch Linux with KDE")](https://raw.githubusercontent.com/picodotdev/alis/main/images/archlinux-kde.jpg)
+[![Arch Linux](https://raw.githubusercontent.com/picodotdev/alis/main/images/archlinux-xfce-thumb.jpg "Arch Linux with XFCE")](https://raw.githubusercontent.com/picodotdev/alis/main/images/archlinux-xfce.jpg)
+[![Arch Linux](https://raw.githubusercontent.com/picodotdev/alis/main/images/archlinux-cinnamon-thumb.jpg "Arch Linux with Cinnamon")](https://raw.githubusercontent.com/picodotdev/alis/main/images/archlinux-cinnamon.jpg)
+[![Arch Linux](https://raw.githubusercontent.com/picodotdev/alis/main/images/archlinux-mate-thumb.jpg "Arch Linux with Mate")](https://raw.githubusercontent.com/picodotdev/alis/main/images/archlinux-mate.jpg)
+[![Arch Linux](https://raw.githubusercontent.com/picodotdev/alis/main/images/archlinux-lxde-thumb.jpg "Arch Linux with LXDE")](https://raw.githubusercontent.com/picodotdev/alis/main/images/archlinux-lxde.jpg)
+[![Arch Linux](https://raw.githubusercontent.com/picodotdev/alis/main/images/archlinux-root-password-thumb.png "Arch Linux unloking LUKS on boot")](https://raw.githubusercontent.com/picodotdev/alis/main/images/archlinux-root-password.png)
 
 ## Video
 
@@ -229,6 +231,7 @@ Also, if you prefer to install an Arch Linux using a guided graphical installer 
 * [ArcoLinux](https://arcolinux.com/)
 * [Manjaro](https://manjaro.org/)
 * [EndeavourOS](https://endeavouros.com/)
+* [GarudaLinux](https://garudalinux.org/)
 * [Archlabs](https://archlabslinux.com/)
 * [RebornOS](https://rebornos.org/)
 * [BlackArch](https://blackarch.org/)
@@ -322,10 +325,12 @@ https://www.archlinux.org/download/
 * https://wiki.archlinux.org/title/Qtile
 * https://wiki.archlinux.org/title/REFInd
 * https://wiki.archlinux.org/title/Reflector
+* https://wiki.archlinux.org/title/Unified_Extensible_Firmware_Interface/Secure_Boot
 * https://wiki.archlinux.org/title/Solid_state_drive/NVMe
 * https://wiki.archlinux.org/title/Solid_State_Drives
 * https://wiki.archlinux.org/title/Swap
 * https://wiki.archlinux.org/title/Systemd
+* https://wiki.archlinux.org/title/Systemd#GPT_partition_automounting
 * https://wiki.archlinux.org/title/Systemd-boot
 * https://wiki.archlinux.org/title/Systemd-homed
 * https://wiki.archlinux.org/title/Unified_Extensible_Firmware_Interface
